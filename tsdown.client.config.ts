@@ -87,6 +87,18 @@ export default defineConfig({
       const clientPath = resolve(output, 'client.js')
       const client = await readFile(clientPath, 'utf8')
       await writeFile(clientPath, client.replace(/\r\n?/g, '\n').replace(/[ \t]+$/gm, ''))
+      const sourceMapPath = resolve(output, 'client.js.map')
+      const sourceMap = JSON.parse(await readFile(sourceMapPath, 'utf8')) as { sources?: string[] }
+      if (Array.isArray(sourceMap.sources)) {
+        sourceMap.sources = sourceMap.sources.map((rawSource) => {
+          const source = rawSource.replace(/\\/g, '/')
+          if (!source.includes('/node_modules/.pnpm/')) return source
+          const nestedModules = source.lastIndexOf('/node_modules/')
+          if (nestedModules < 0) throw new Error(`Unable to normalize pnpm source-map path: ${source}`)
+          return `../node_modules/${source.slice(nestedModules + '/node_modules/'.length)}`
+        })
+        await writeFile(sourceMapPath, JSON.stringify(sourceMap))
+      }
       await writeFile(resolve(output, 'client.d.ts'), [
         "import type { Context } from '@deepseek-ai/cordis'",
         'export declare const inject: readonly string[]',

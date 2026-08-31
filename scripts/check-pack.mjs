@@ -5,7 +5,10 @@ import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const manifest = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'))
-const npmCli = process.env.npm_execpath ?? resolve(dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js')
+const configuredCli = process.env.npm_execpath
+const npmCli = typeof configuredCli === 'string' && /(?:^|[\\/])npm(?:-cli)?\.js$/iu.test(configuredCli)
+  ? configuredCli
+  : resolve(dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js')
 // This script also runs from prepack/prepublishOnly via `npm run check`.
 // The nested dry-run must suppress lifecycle scripts or npm would recursively
 // enter prepack forever before it can report the concrete file list.

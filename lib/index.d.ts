@@ -286,7 +286,6 @@ declare const SaveSettingsInputSchema: z.ZodObject<{
 }, z.core.$strict>;
 type SaveSettingsInput = z.infer<typeof SaveSettingsInputSchema>;
 declare const ProChatSummarySchema: z.ZodObject<{
-  lastError: z.ZodOptional<z.ZodString>;
   id: z.ZodString;
   createdAt: z.ZodString;
   updatedAt: z.ZodString;
@@ -297,6 +296,7 @@ declare const ProChatSummarySchema: z.ZodObject<{
     cancelled: "cancelled";
   }>;
   title: z.ZodString;
+  lastError: z.ZodOptional<z.ZodString>;
   divergence: z.ZodOptional<z.ZodObject<{
     turnId: z.ZodString;
     at: z.ZodString;
