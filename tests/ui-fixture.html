@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DSH Pro Chat recovery fixture</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root{--dsw-alias-label-primary:#172033;--dsw-alias-label-secondary:#506078;--dsw-alias-label-tertiary:#718098;--dsw-alias-bg-layer-1:#fff;--dsw-alias-bg-layer-2:#f5f7fa;--dsw-alias-bg-layer-3:#e9eef5;--dsw-alias-border-l1:#e5e9ef;--dsw-alias-border-l2:#cbd3df;--dsw-alias-brand-primary:#1d5fd1;--dsw-alias-brand-primary-invert:#fff;--dsw-alias-state-success-primary:#137a4a;--dsw-alias-state-error-primary:#b52c36;--dsw-alias-state-warn-primary:#a26000}body{margin:0;padding:20px;background:#eef2f7;font-family:Arial,'Microsoft YaHei',sans-serif}#root{max-width:1100px;margin:auto}
+  </style>
+  <script src="./vendor/react.production.min.js"></script>
+  <script src="./vendor/react-dom.production.min.js"></script>
+  <script>window.__ModuleLoader__={load(registration){window.__PRO_CHAT_REGISTRATION__=registration}}</script>
+  <script src="../lib/client.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    const React = window.React;
+    const jsxRuntime = {
+      Fragment: React.Fragment,
+      jsx(type, props, key) { return React.createElement(type, key === undefined ? props : {...props, key}); },
+      jsxs(type, props, key) { return React.createElement(type, key === undefined ? props : {...props, key}); },
+    };
+    const plugin = window.__PRO_CHAT_REGISTRATION__.factory(specifier => {
+      if (specifier === 'react') return React;
+      if (specifier === 'react/jsx-runtime') return jsxRuntime;
+      throw new Error('Unexpected fixture require: '+specifier);
+    });
+    const active = {
+      id:'11111111-1111-4111-8111-111111111111',title:'Synthetic recovery conversation',createdAt:'2026-08-31T00:00:00.000Z',updatedAt:'2026-08-31T00:02:00.000Z',status:'idle'
+    };
+    const diverged = {
+      id:'55555555-5555-4555-8555-555555555555',title:'Synthetic divergence lock',createdAt:'2026-08-31T00:05:00.000Z',updatedAt:'2026-08-31T00:06:00.000Z',status:'failed',lastError:'ChatGPT 网页会话可能已推进，但本地无法证明结果闭合。',divergence:{turnId:'99999999-9999-4999-8999-999999999999',at:'2026-08-31T00:06:00.000Z',oracleSessionId:'oracle-unverified',reason:'synthetic submitted-unverified result'}
+    };
+    const archived = {
+      id:'66666666-6666-4666-8666-666666666666',title:'Synthetic recycled conversation',createdAt:'2026-08-31T00:03:00.000Z',updatedAt:'2026-08-31T00:04:00.000Z',status:'idle',quarantine:{opId:'77777777-7777-4777-8777-777777777777',phase:'quarantined',archivedAt:'2026-08-31T00:04:00.000Z',previousStatus:'idle',oracleScope:'chat-scoped',exactOracleSessionIds:[]}
+    };
+    let activeChats=[active,diverged]; let archivedChats=[archived];
+    window.__fixture={draft:null,passiveCalls:0,verifyCalls:0,deleteCalls:0,restoreCalls:0};
+    const detail={chat:{...active,lastSeq:2,oracleScope:'chat-scoped',latestOracleSessionId:'oracle-synthetic-session'},messages:[
+      {id:'22222222-2222-4222-8222-222222222222',chatId:active.id,seq:1,role:'user',content:'Synthetic prompt',createdAt:'2026-08-31T00:01:00.000Z'},
+      {id:'33333333-3333-4333-8333-333333333333',chatId:active.id,seq:2,role:'assistant',content:'Synthetic response',createdAt:'2026-08-31T00:02:00.000Z',turnId:'44444444-4444-4444-8444-444444444444',oracleSessionId:'oracle-synthetic-session'}
+    ],turns:[]};
+    const divergedDetail={chat:{...diverged,lastSeq:1,oracleScope:'chat-scoped'},messages:[{id:'88888888-8888-4888-8888-888888888888',chatId:diverged.id,seq:1,role:'user',content:'Potentially submitted prompt',createdAt:'2026-08-31T00:05:30.000Z'}],turns:[{id:diverged.divergence.turnId,chatId:diverged.id,promptMessageId:'88888888-8888-4888-8888-888888888888',state:'external-diverged',createdAt:'2026-08-31T00:05:30.000Z',finishedAt:'2026-08-31T00:06:00.000Z',oracleSessionId:'oracle-unverified',error:'synthetic submitted-unverified result'}]};
+    const api={
+      async listChats(){return activeChats;},async listArchivedChats(){return archivedChats;},async getChat(input){return input.chatId===diverged.id?divergedDetail:detail;},async createChat(){return active;},async renameChat(){return active;},
+      async deleteChat(){window.__fixture.deleteCalls++;activeChats=[];archivedChats=[archived];return true;},
+      async restoreChat(){window.__fixture.restoreCalls++;activeChats=[active];archivedChats=[];return active;},
+      async send(){throw new Error('fixture never sends');},async cancel(){return active;},async settings(){return {cdpTarget:'127.0.0.1:65534',revision:1};},async saveSettings(value){return {cdpTarget:value.cdpTarget,revision:2};},
+      async transportStatus(){window.__fixture.passiveCalls++;return {cdpTarget:'127.0.0.1:65534',reachable:false,oracleInstalled:true,selectionVerified:false,message:'专用 Chrome 未连接；自动轮询没有点击页面。'};},
+      async verifyTransport(){window.__fixture.verifyCalls++;return {cdpTarget:'127.0.0.1:65534',reachable:false,oracleInstalled:true,selectionVerified:false,message:'主动检查完成；未发送模型请求。'};},
+      async exportHandoff(){return {text:'SYNTHETIC COMPLETE HANDOFF',messageCount:2};}
+    };
+    window.__fixtureRoot=ReactDOM.createRoot(document.getElementById('root'));
+    window.__fixtureRoot.render(React.createElement(plugin.ProChatView,{api,inputActions:{setDraft(text){window.__fixture.draft=text;}}}));
+  </script>
+</body>
+</html>

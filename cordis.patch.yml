@@ -1,0 +1,4 @@
+# Persistent Host service. The package manifest contributes the Web client entry.
+- insert:
+    - id: pro-chat
+      name: dsh-pro-chat

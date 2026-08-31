@@ -1,0 +1,81 @@
+{
+  "name": "dsh-pro-chat",
+  "version": "0.2.0",
+  "description": "Persistent ChatGPT Pro browser conversations with safe DSH context handoff",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeemanCheung/dsh-pro-chat.git"
+  },
+  "homepage": "https://github.com/LeemanCheung/dsh-pro-chat#readme",
+  "bugs": {
+    "url": "https://github.com/LeemanCheung/dsh-pro-chat/issues"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": { "types": "./lib/index.d.ts", "default": "./lib/index.js" },
+    "./client": { "types": "./lib/client.d.ts", "default": "./lib/client.js" },
+    "./typert": { "types": "./lib/typert.host.d.ts", "default": "./lib/typert.host.js" },
+    "./remote": { "types": "./lib/typert.remote-client.d.ts", "default": "./lib/typert.remote-client.js" },
+    "./types": { "types": "./lib/index.d.ts" },
+    "./package.json": "./package.json"
+  },
+  "files": ["lib/*.js", "lib/*.d.ts", "lib/*.js.map", "lib/*.d.ts.map", "lib/typert.host.js", "lib/typert.host.d.ts", "lib/typert.remote-client.js", "lib/typert.remote-client.d.ts", "cordis.patch.yml", "README.md", "README.zh-CN.md", "CHANGELOG.md", "LICENSE"],
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-api-remotes", "@deepseek-ai/dsh-client-runtime"]
+    }
+  },
+  "scripts": {
+    "build": "npm run build:host && npm run build:client",
+    "build:host": "tsdown --config tsdown.host.config.ts && npm run build:typert",
+    "build:client": "tsdown --config tsdown.client.config.ts && node scripts/clean-client-artifacts.mjs",
+    "build:typert": "node scripts/clean-typert-chunks.mjs && tsdown --config tsdown.typert.config.ts",
+    "clean": "node -e \"require('node:fs').rmSync('lib',{recursive:true,force:true})\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --config vitest.config.ts",
+    "check": "npm run check:quality && npm run pack:check",
+    "check:quality": "npm run typecheck && npm run build:host && npm run build:client && npm run test && node scripts/check-generated.mjs && node scripts/check-standalone.mjs && node scripts/check-deterministic.mjs",
+    "pack:check": "node scripts/check-pack.mjs",
+    "tarball:check": "node scripts/check-tarball-consumer.mjs",
+    "prepack": "npm run check",
+    "prepublishOnly": "npm run check"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "npm@11.12.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-api-remotes": "^0.1.1-rc.2",
+    "@deepseek-ai/dsh-client-runtime": "^0.1.1-rc.2",
+    "@deepseek-ai/dsh-client-ui-slots": "^0.1.1-rc.2",
+    "@deepseek-ai/dsh-storage-domain": "^0.1.1-rc.2",
+    "@deepseek-ai/dsh-subprocess": "^0.1.1-rc.2",
+    "@deepseek-ai/dsh-typert-protocol": "^0.1.1-rc.2",
+    "react": "^18.2.0"
+  },
+  "dependencies": {
+    "@steipete/oracle": "0.18.0",
+    "chrome-remote-interface": "0.34.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-invariants": "0.1.1-rc.2",
+    "@deepseek-ai/dsh-typert-generator": "0.1.1-rc.2",
+    "@types/chrome-remote-interface": "^0.31.14",
+    "@types/node": "24.13.3",
+    "@types/react": "~18.3.1",
+    "lightningcss": "1.33.0",
+    "tsdown": "0.22.14",
+    "typescript": "6.0.3",
+    "vitest": "4.1.10"
+  }
+}

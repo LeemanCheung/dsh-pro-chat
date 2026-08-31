@@ -1,0 +1,9 @@
+node_modules/
+.playwright-cli/
+typert-workspace/
+.impeccable*
+RECOVERY_BASELINE.md
+*.tsbuildinfo
+*.tgz
+coverage/
+npm-debug.log*
