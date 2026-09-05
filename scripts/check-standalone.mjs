@@ -8,6 +8,13 @@ const expectedRepository = 'git+https://github.com/LeemanCheung/dsh-pro-chat.git
 if (manifest.repository?.type !== 'git' || manifest.repository.url !== expectedRepository) {
   throw new Error('package repository metadata does not target LeemanCheung/dsh-pro-chat')
 }
+if (manifest.dsh?.compatibility?.dsh !== '>=0.1.2-rc.1 <0.1.3-0'
+  || manifest.dsh.compatibility.dshReleases?.['0.1.2-rc.1'] !== 'unknown') {
+  throw new Error('package compatibility must name DSH 0.1.2-rc.1 without claiming unperformed live UAT')
+}
+if (JSON.stringify(manifest).includes('dsh-client-runtime')) {
+  throw new Error('removed dsh-client-runtime dependency remains in package metadata')
+}
 if (manifest.scripts?.prepack !== 'npm run check' || manifest.scripts?.prepublishOnly !== 'npm run check') {
   throw new Error('prepack and prepublishOnly must both execute the complete check gate')
 }

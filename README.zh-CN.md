@@ -22,6 +22,6 @@
 
 仓库是独立 npm 项目。干净检出后使用 Node.js 24 依次执行 `npm ci`、`npm run check`、`npm run tarball:check` 和 `npm audit --audit-level=moderate`。`prepack` 与 `prepublishOnly` 均执行完整门禁；内部 pack allowlist 使用 `--ignore-scripts`，不会递归触发生命周期。GitHub CI 在 Windows/Linux 上重复干净安装与检查，并验证实际 tarball 的空消费者安装和公开导出。
 
-自动化门禁覆盖源码拥有的 Remote 契约、被动轮询、血缘校验、Node 24、固定类别诊断、跨表/sidecar 恢复、重启 divergence 锁、资产 inventory、长旧版 session 清单、生成物一致性、确定性构建、source map 归属和严格 pack allowlist。
+`0.2.1` 已迁移到 DSH `0.1.2-rc.1` 的 Remote、会话视图与渲染接口，并让样式随插件卸载和重载正确清理。自动化门禁覆盖源码拥有的 Remote 契约、被动轮询、血缘校验、Node 24、固定类别诊断、跨表/sidecar 恢复、重启 divergence 锁、资产 inventory、长旧版 session 清单、生成物一致性、确定性构建、source map 归属和严格 pack allowlist。真实运行兼容性保持 `unknown`，直到完成下述两轮真实 Profile 验收。
 
 `tests/ui-fixture.html` 仅用于人工浏览器检查，不进入 npm 包或自动门禁，也不是当前 DSH Profile、真实 ChatGPT 模型或生产 UAT。最终仍需用户明确授权一次新的首轮 + 同一 Oracle conversation 续接，并验证完整上下文仅写入 DSH 草稿、不自动提交。

@@ -9,9 +9,10 @@ const PACKAGE_ROOT = fileURLToPath(new URL('.', import.meta.url))
 const cssFiles = new Map<string, string>()
 const platformModules = [
   'react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', '@deepseek-ai/cordis',
-  '@deepseek-ai/dsh-client-ui-slots', '@deepseek-ai/dsh-client-web-react',
+  '@deepseek-ai/dsh-client-ui-slots', '@deepseek-ai/dsh-client-ui-renderer/client', '@deepseek-ai/dsh-client-ui-conversation/client',
+  '@deepseek-ai/dsh-client-web-react',
   '@deepseek-ai/dsh-client-ui-primitives', '@deepseek-ai/dsh-client-ui-attachment',
-  '@deepseek-ai/dsh-client-schema-form', '@deepseek-ai/dsh-client-runtime/client',
+  '@deepseek-ai/dsh-client-schema-form',
   '@deepseek-ai/dsh-api-remotes/client', '@deepseek-ai/dsh-client-ui-layout/client',
   '@deepseek-ai/dsh-client-ui-settings/client', '@deepseek-ai/dsh-client-ui-theme/client',
 ] as const
@@ -37,6 +38,7 @@ export default defineConfig({
   deps: {
     neverBundle: [...platformModules],
     alwaysBundle: ['zod'],
+    onlyBundle: false,
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV ?? 'production'),
@@ -69,14 +71,9 @@ export default defineConfig({
       const classes = Object.fromEntries(Object.entries(result.exports ?? {})
         .sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0)
         .map(([local, value]) => [local, value.name]))
-      const tagId = `${PACKAGE_ID}/${basename(file)}`
       return [
-        `const css=${JSON.stringify(result.code.toString())};`,
-        `const tagId=${JSON.stringify(tagId)};`,
-        "if(typeof document!=='undefined'&&!document.querySelector('style[data-plugin-css='+JSON.stringify(tagId)+']')){",
-        "const tag=document.createElement('style');",
-        `tag.dataset.plugin=${JSON.stringify(PACKAGE_ID)};`,
-        'tag.dataset.pluginCss=tagId;tag.textContent=css;document.head.appendChild(tag);}',
+        `export const cssText=${JSON.stringify(result.code.toString())};`,
+        `export const styleId=${JSON.stringify(`${PACKAGE_ID}/${basename(file)}`)};`,
         `export default ${JSON.stringify(classes)};`,
       ].join('\n')
     },

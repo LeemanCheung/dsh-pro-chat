@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+- Migrated the Web client from the removed `dsh-client-runtime` to the DSH `0.1.2-rc.1` Remote, Conversation, and Renderer contracts.
+- Bound the Pro Chat view to the typed `conversation.view` slot and moved CSS ownership into the Cordis lifecycle, so unload/reload removes and reinstalls exactly one stylesheet.
+- Preserved the two-turn Oracle lineage proof, restart-safe finalization, submitted-but-unverified duplicate-send lock, and confirmed draft-only handoff behavior.
+- Added release gates that reject the retired runtime dependency and keep live `0.1.2-rc.1` compatibility marked unknown until an authorized Profile UAT completes.
+
 ## 0.2.0
 
 - Made the repository self-contained for GitHub/npm release with a package-owned TypeScript/bundling toolchain, npm lockfile, cross-platform CI, non-recursive lifecycle gates, source-map ownership checks, and an installed-tarball consumer smoke test.

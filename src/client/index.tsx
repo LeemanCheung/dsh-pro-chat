@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
-import type {} from '@deepseek-ai/dsh-client-ui-slots'
+import type { ConvViewProps, InputActions } from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import { TYPERT_REMOTE as proChatRemote } from '../remote-contract.ts'
 import type { Handoff, ProChatDetail, ProChatSettings, ProChatSummary, ProTurn, TransportStatus } from '../schema.ts'
 import { RefreshSelectionCoordinator } from './refresh-selection.ts'
-import styles from './pro-chat.module.css'
+import styles, { cssText, styleId } from './pro-chat.module.css'
 
 export const inject = ['remote', 'slots']
 
@@ -42,7 +43,7 @@ type Api = {
   verifyTransport(): Promise<TransportStatus>
   exportHandoff(input: { chatId: string }): Promise<Handoff>
 }
-type DockProps = { api: Api; inputActions: { setDraft(text: string): void } }
+type DockProps = ConvViewProps & { api: Api; inputActions: Pick<InputActions, 'setDraft'> }
 
 const unwrap = async <T,>(pending: Promise<RemoteResult<T>>): Promise<T> => {
   const result = await pending
@@ -364,11 +365,6 @@ export function ProChatView({ api, inputActions }: DockProps): React.ReactElemen
   </section>
 }
 
-type ViewSlotRuntime = {
-  inject(name: 'conversation.view', factory: () => () => void): void
-  register(options: { name: 'conversation.view'; id: string; order: number; label: string; inject: () => { api: Api } }, component: typeof ProChatView): () => void
-}
-
 export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
   const disposeRemote = await ctx.remote.$mount(proChatRemote)
   const remote = ctx.get('remote.proChat') as RawApi | undefined
@@ -377,7 +373,17 @@ export async function apply(ctx: ClientContext): Promise<() => Promise<void>> {
     throw new Error('Pro Chat Remote namespace did not mount')
   }
   const api = apiFrom(remote)
-  const views = ctx.slots as unknown as ViewSlotRuntime
-  views.inject('conversation.view', () => views.register({ name: 'conversation.view', id: 'pro-chat', order: 20, label: 'Pro Chat', inject: () => ({ api }) }, ProChatView))
+  ctx.effect(() => {
+    const style = document.createElement('style')
+    style.dataset.plugin = 'dsh-pro-chat'
+    style.dataset.pluginCss = styleId
+    style.textContent = cssText
+    document.head.append(style)
+    return () => { style.remove() }
+  }, 'pro-chat: client styles')
+  ctx.slots.inject('conversation.view', () => ctx.slots.register(
+    { name: 'conversation.view', id: 'pro-chat', order: 20, label: 'Pro Chat', inject: () => ({ api }) },
+    ProChatView,
+  ))
   return disposeRemote
 }

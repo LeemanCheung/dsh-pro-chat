@@ -1,6 +1,8 @@
 import { access, readFile, readdir } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { dirname, isAbsolute, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import vm from 'node:vm'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const lib = resolve(root, 'lib')
@@ -15,6 +17,27 @@ const required = [
   'typert.remote-client.js', 'typert.remote-client.d.ts',
 ]
 for (const name of required) await access(resolve(lib, name))
+
+const clientBundle = await readFile(resolve(lib, 'client.js'), 'utf8')
+if (!clientBundle.includes('window.__ModuleLoader__.load')) {
+  throw new Error('client bundle does not use the DSH module-loader contract')
+}
+if (clientBundle.includes('dsh-client-runtime') || /require\(["']zod["']\)/u.test(clientBundle)) {
+  throw new Error('client bundle retained a removed runtime or an unavailable browser dependency')
+}
+let clientDescriptor
+vm.runInNewContext(clientBundle, {
+  window: { __ModuleLoader__: { load(value) { clientDescriptor = value } } },
+  console,
+}, { filename: 'lib/client.js' })
+if (clientDescriptor?.id !== 'dsh-pro-chat' || typeof clientDescriptor.factory !== 'function') {
+  throw new Error('client bundle did not register dsh-pro-chat with the DSH module loader')
+}
+const clientExports = clientDescriptor.factory(createRequire(import.meta.url))
+if (typeof clientExports?.apply !== 'function'
+  || JSON.stringify(clientExports.inject) !== JSON.stringify(['remote', 'slots'])) {
+  throw new Error('client bundle exports do not match the Pro Chat plugin contract')
+}
 
 for (const mapName of ['index.js.map', 'client.js.map']) {
   const map = JSON.parse(await readFile(resolve(lib, mapName), 'utf8'))

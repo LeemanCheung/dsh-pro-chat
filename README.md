@@ -94,7 +94,7 @@ npm audit --audit-level=moderate
 
 `prepack` and `prepublishOnly` both execute the complete `npm run check` gate. The nested pack allowlist uses `--ignore-scripts`, so lifecycle verification cannot recurse through `npm pack`. GitHub CI repeats clean npm installation and checks on Windows and Linux, exercises the real prepack lifecycle, installs the generated tarball into an empty consumer, and audits the locked dependency tree.
 
-The package prepares version `0.2.0`. The automated gate covers:
+The package prepares version `0.2.1` for DSH `0.1.2-rc.1`. It uses the current Remote, Conversation, and Renderer contracts and owns its stylesheet through the plugin lifecycle. Automated checks pass without making a ChatGPT request; live compatibility remains `unknown` until the authorized two-turn Profile UAT below completes. The automated gate covers:
 
 - strict schemas and source-owned Host/Client Remote descriptors;
 - passive polling with zero DOM evaluation;

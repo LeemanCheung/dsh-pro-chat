@@ -47,4 +47,16 @@ describe('Pro Chat refresh selection coordinator', () => {
     const source = await readFile(new URL('../src/client/index.tsx', import.meta.url), 'utf8')
     expect(source).toMatch(/const run =[^]*if \(busyRef\.current\) return\s+[^]*selectionRef\.current\.beginMutation\(\)\s+busyRef\.current = true/u)
   })
+
+  it('owns client styles through the plugin lifecycle instead of module evaluation', async () => {
+    const [source, buildConfig] = await Promise.all([
+      readFile(new URL('../src/client/index.tsx', import.meta.url), 'utf8'),
+      readFile(new URL('../tsdown.client.config.ts', import.meta.url), 'utf8'),
+    ])
+    expect(source).toContain("ctx.effect(() => {")
+    expect(source).toContain("style.dataset.plugin = 'dsh-pro-chat'")
+    expect(source).toContain('return () => { style.remove() }')
+    expect(buildConfig).not.toContain("document.createElement('style')")
+    expect(buildConfig).not.toContain('document.querySelector')
+  })
 })
