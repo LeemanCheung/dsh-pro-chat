@@ -5,7 +5,7 @@
 - Migrated the Web client from the removed `dsh-client-runtime` to the DSH `0.1.2-rc.1` Remote, Conversation, and Renderer contracts.
 - Bound the Pro Chat view to the typed `conversation.view` slot and moved CSS ownership into the Cordis lifecycle, so unload/reload removes and reinstalls exactly one stylesheet.
 - Preserved the two-turn Oracle lineage proof, restart-safe finalization, submitted-but-unverified duplicate-send lock, and confirmed draft-only handoff behavior.
-- Added release gates that reject the retired runtime dependency and keep live `0.1.2-rc.1` compatibility marked unknown until an authorized Profile UAT completes.
+- Added release gates that reject the retired runtime dependency. The rc.1 QA Profile loads the Host and visible Pro Chat tab; compatibility remains unknown because automatic approval blocked starting the dedicated Chrome, so the required two-turn browser UAT could not run.
 
 ## 0.2.0
 

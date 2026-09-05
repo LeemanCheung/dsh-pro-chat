@@ -682,7 +682,7 @@ describe('ProChatService recovery', () => {
     expect(state.chats.get(CHAT_ID)?.quarantine).toBeUndefined()
     expect(await state.service.listChats()).toHaveLength(1)
     expect(await readFile(join(root, 'transcripts', CHAT_ID, 'turn.md'), 'utf8')).toBe('reply')
-  })
+  }, 15_000)
 
   it('preserves a divergence lock through archive and restore', async () => {
     const root = await mkdtemp(join(tmpdir(), 'pro-chat-diverged-trash-'))

@@ -94,7 +94,7 @@ npm audit --audit-level=moderate
 
 `prepack` and `prepublishOnly` both execute the complete `npm run check` gate. The nested pack allowlist uses `--ignore-scripts`, so lifecycle verification cannot recurse through `npm pack`. GitHub CI repeats clean npm installation and checks on Windows and Linux, exercises the real prepack lifecycle, installs the generated tarball into an empty consumer, and audits the locked dependency tree.
 
-The package prepares version `0.2.1` for DSH `0.1.2-rc.1`. It uses the current Remote, Conversation, and Renderer contracts and owns its stylesheet through the plugin lifecycle. Automated checks pass without making a ChatGPT request; live compatibility remains `unknown` until the authorized two-turn Profile UAT below completes. The automated gate covers:
+The package prepares version `0.2.1` for DSH `0.1.2-rc.1`. It uses the current Remote, Conversation, and Renderer contracts and owns its stylesheet through the plugin lifecycle. The rc.1 QA Profile loaded both the Host plugin and the visible Pro Chat tab. Starting the dedicated Chrome was blocked by the environment's automatic approval check, so the required two-turn browser UAT did not run; this is an uncompleted browser prerequisite, not a DSH load failure. Compatibility therefore remains `unknown`. The automated gate covers:
 
 - strict schemas and source-owned Host/Client Remote descriptors;
 - passive polling with zero DOM evaluation;
@@ -110,4 +110,4 @@ The package prepares version `0.2.1` for DSH `0.1.2-rc.1`. It uses the current R
 
 `tests/ui-fixture.html` is a manual-only browser fixture. It is excluded from the npm package and automated gate; it is not a live DSH Profile, ChatGPT model, or production UAT.
 
-These checks do not substitute for an authorized real two-turn ChatGPT Pro UAT. Production acceptance still requires one fresh initial turn, a follow-up in the same Oracle conversation, a confirmed DSH draft handoff that does not auto-send, reload/restart persistence, and long-running browser stability.
+These checks do not substitute for a real two-turn ChatGPT Pro UAT. Production acceptance still requires starting the dedicated Chrome, one fresh initial turn, a follow-up in the same Oracle conversation, a confirmed DSH draft handoff that does not auto-send, reload/restart persistence, and long-running browser stability.

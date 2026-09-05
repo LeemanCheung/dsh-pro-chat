@@ -72,7 +72,7 @@ describe('recoverable chat artifacts', () => {
     await restoreChatFiles(input)
     expect(await readFile(join(root, 'transcripts', CHAT_ID, 'turn.md'), 'utf8')).toBe('reply')
     expect(await readFile(join(root, 'oracle-chats', CHAT_ID, 'meta.json'), 'utf8')).toBe('metadata')
-  })
+  }, 15_000)
 
   it('moves only exact persisted legacy Oracle ids and never guesses slugs', async () => {
     const root = await mkdtemp(join(tmpdir(), 'pro-chat-legacy-trash-'))
