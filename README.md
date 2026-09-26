@@ -96,6 +96,8 @@ npm audit --audit-level=moderate
 
 The quality gate hashes every `lib` file, including declarations and maps, across two builds. It then compares rebuilt `lib` with `HEAD` and rejects modified, deleted, staged, or new artifacts, including ignored files. After changing source, run `npm run build` and commit the source and generated output together before running the complete gate. `.gitattributes` keeps source and generated files on LF across Windows and Linux so embedded source-map content does not depend on checkout line endings.
 
+CSS module prefixes are derived from the package ID and normalized package-relative filename. Physical checkout paths and platform path separators therefore do not change the committed client bundle.
+
 The package prepares version `0.2.1` for DSH `0.1.2-rc.1`. It uses the current Remote, Conversation, and Renderer contracts and owns its stylesheet through the plugin lifecycle. The rc.1 QA Profile loaded both the Host plugin and the visible Pro Chat tab. Starting the dedicated Chrome was blocked by the environment's automatic approval check, so the required two-turn browser UAT did not run; this is an uncompleted browser prerequisite, not a DSH load failure. Compatibility therefore remains `unknown`. The automated gate covers:
 
 - strict schemas and source-owned Host/Client Remote descriptors;

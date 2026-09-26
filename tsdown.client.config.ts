@@ -3,6 +3,7 @@ import { basename, dirname, isAbsolute, relative, resolve, sep } from 'node:path
 import { fileURLToPath } from 'node:url'
 import { transform } from 'lightningcss'
 import { defineConfig } from 'tsdown'
+import { cssModulePattern } from './scripts/css-module-pattern.mjs'
 
 const PACKAGE_ID = 'dsh-pro-chat'
 const PACKAGE_ROOT = fileURLToPath(new URL('.', import.meta.url))
@@ -65,7 +66,7 @@ export default defineConfig({
         filename: logicalFilename,
         projectRoot: logicalRoot,
         code: await readFile(file),
-        cssModules: { pattern: '[hash]_[local]' },
+        cssModules: { pattern: cssModulePattern(PACKAGE_ID, packagePath(file)) },
         minify: true,
       })
       const classes = Object.fromEntries(Object.entries(result.exports ?? {})

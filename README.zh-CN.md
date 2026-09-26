@@ -24,6 +24,8 @@
 
 质量检查会比较两次构建的全部 `lib` 文件哈希，包括声明文件和 map，再与 `HEAD` 比较，拦截修改、删除、暂存变更和新增生成物，包括被忽略的文件。修改源码后先运行 `npm run build`，把源码和生成物一起提交，再运行完整门禁。`.gitattributes` 将源码和生成物固定为 LF，避免 Windows/Linux 检出换行差异改变 source map 内嵌内容。
 
+CSS 模块前缀由包名和规范化后的包内文件路径计算，Windows/Linux 的物理检出路径及路径分隔符不会改变已提交的客户端 bundle。
+
 `0.2.1` 已迁移到 DSH `0.1.2-rc.1` 的 Remote、会话视图与渲染接口，并让样式随插件卸载和重载正确清理。rc.1 的 QA Profile 已成功加载 Host 和可见的 Pro Chat 标签页；由于环境的自动审批拦截了专用 Chrome 启动，本轮无法执行两轮浏览器验收。这是浏览器前置条件未完成，不是 DSH 加载失败，因此兼容状态继续保持 `unknown`。自动化门禁覆盖源码拥有的 Remote 契约、被动轮询、血缘校验、Node 24、固定类别诊断、跨表/sidecar 恢复、重启 divergence 锁、资产 inventory、长旧版 session 清单、生成物一致性、确定性构建、source map 归属和严格 pack allowlist。
 
 `tests/ui-fixture.html` 仅用于人工浏览器检查，不进入 npm 包或自动门禁，也不是当前 DSH Profile、真实 ChatGPT 模型或生产 UAT。最终仍需先启动专用 Chrome，再完成一次新的首轮 + 同一 Oracle conversation 续接，并验证完整上下文仅写入 DSH 草稿、不自动提交。
