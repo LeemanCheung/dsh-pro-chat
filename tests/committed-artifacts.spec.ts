@@ -1,5 +1,5 @@
-import { execFileSync } from 'node:child_process'
-import { cpSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { execFileSync, spawnSync } from 'node:child_process'
+import { cpSync, mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
@@ -24,6 +24,8 @@ describe('committed build artifacts', () => {
     git('config', 'core.hooksPath', '.git/hooks')
     mkdirSync(resolve(directory, 'lib'))
     mkdirSync(resolve(directory, 'src'))
+    mkdirSync(resolve(directory, 'scripts'))
+    write('scripts/check-committed.mjs', readFileSync(new URL('../scripts/check-committed.mjs', import.meta.url), 'utf8'))
     write('.gitattributes', readFileSync(new URL('../.gitattributes', import.meta.url), 'utf8'))
     write('lib/index.js', 'export const answer = 42\n')
     write('src/index.ts', 'export const answer: number = 42\n')
@@ -62,5 +64,28 @@ describe('committed build artifacts', () => {
     expect(readFileSync(resolve(directory, 'src/index.ts'), 'utf8')).toBe('export const answer: number = 42\n')
     write('lib/index.js', 'export const answer = 42\r\n')
     expect(() => checkCommittedArtifacts(directory)).not.toThrow()
+  }, 30_000)
+
+  it('rejects dirty artifacts when the real CLI starts through a directory alias', () => {
+    write('lib/index.js', 'export const answer = 43\n')
+    const aliasRoot = createFixture()
+    const alias = resolve(aliasRoot, 'checkout')
+    let linked = false
+    try {
+      symlinkSync(directory, alias, process.platform === 'win32' ? 'junction' : 'dir')
+      linked = true
+      const entry = resolve(alias, 'scripts/check-committed.mjs')
+      const entries = process.platform === 'win32' ? [entry, entry.toLowerCase()] : [entry]
+      for (const entryPath of entries) {
+        const result = spawnSync(process.execPath, [entryPath], { cwd: alias, encoding: 'utf8' })
+        expect(result.error).toBeUndefined()
+        expect(result.status).toBe(1)
+        expect(result.stderr).toContain('lib/index.js')
+      }
+    } finally {
+      // Remove only the link before recursively cleaning its owned container.
+      if (linked) unlinkSync(alias)
+      cleanup(aliasRoot)
+    }
   }, 30_000)
 })

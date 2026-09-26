@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process'
+import { realpathSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -17,6 +18,7 @@ export function checkCommittedArtifacts(directory = root) {
   return 'rebuilt lib matches committed artifacts (including added files)'
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+// Native resolution also canonicalizes Windows path casing, including junction entry paths.
+if (process.argv[1] && realpathSync.native(resolve(process.argv[1])) === realpathSync.native(fileURLToPath(import.meta.url))) {
   console.log(checkCommittedArtifacts())
 }

@@ -22,7 +22,7 @@
 
 仓库是独立 npm 项目。干净检出后使用 Node.js 24 依次执行 `npm ci`、`npm run check`、`npm run tarball:check` 和 `npm audit --audit-level=moderate`。`prepack` 与 `prepublishOnly` 均执行完整门禁；内部 pack allowlist 使用 `--ignore-scripts`，不会递归触发生命周期。GitHub CI 在 Windows/Linux 上重复干净安装与检查，并验证实际 tarball 的空消费者安装和公开导出。
 
-质量检查最后会把重建后的 `lib` 与 `HEAD` 比较，拦截修改、删除、暂存变更和新增生成物，包括被忽略的文件。修改源码后先运行 `npm run build`，把源码和生成物一起提交，再运行完整门禁。`.gitattributes` 将源码和生成物固定为 LF，避免 Windows/Linux 检出换行差异改变 source map 内嵌内容。
+质量检查会比较两次构建的全部 `lib` 文件哈希，包括声明文件和 map，再与 `HEAD` 比较，拦截修改、删除、暂存变更和新增生成物，包括被忽略的文件。修改源码后先运行 `npm run build`，把源码和生成物一起提交，再运行完整门禁。`.gitattributes` 将源码和生成物固定为 LF，避免 Windows/Linux 检出换行差异改变 source map 内嵌内容。
 
 `0.2.1` 已迁移到 DSH `0.1.2-rc.1` 的 Remote、会话视图与渲染接口，并让样式随插件卸载和重载正确清理。rc.1 的 QA Profile 已成功加载 Host 和可见的 Pro Chat 标签页；由于环境的自动审批拦截了专用 Chrome 启动，本轮无法执行两轮浏览器验收。这是浏览器前置条件未完成，不是 DSH 加载失败，因此兼容状态继续保持 `unknown`。自动化门禁覆盖源码拥有的 Remote 契约、被动轮询、血缘校验、Node 24、固定类别诊断、跨表/sidecar 恢复、重启 divergence 锁、资产 inventory、长旧版 session 清单、生成物一致性、确定性构建、source map 归属和严格 pack allowlist。
 
