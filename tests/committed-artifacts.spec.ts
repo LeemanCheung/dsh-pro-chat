@@ -59,6 +59,20 @@ describe('committed build artifacts', () => {
     expect(() => checkCommittedArtifacts(directory)).toThrow('lib/new.js')
   }, 30_000)
 
+  it('rejects a stale staged version when the rebuilt worktree matches HEAD', () => {
+    write('lib/index.js', 'export const answer = 43\n')
+    git('add', 'lib/index.js')
+    write('lib/index.js', 'export const answer = 42\n')
+    expect(() => checkCommittedArtifacts(directory)).toThrow('lib/index.js')
+  }, 30_000)
+
+  it('rejects a newly staged artifact removed by a later build cleanup', () => {
+    write('lib/new.js', 'export const stale = true\n')
+    git('add', 'lib/new.js')
+    rmSync(resolve(directory, 'lib/new.js'))
+    expect(() => checkCommittedArtifacts(directory)).toThrow('lib/new.js')
+  }, 30_000)
+
   it('keeps source checkout LF with autocrlf and ignores plain CRLF-only artifact differences', () => {
     git('checkout-index', '--force', '--', 'src/index.ts')
     expect(readFileSync(resolve(directory, 'src/index.ts'), 'utf8')).toBe('export const answer: number = 42\n')

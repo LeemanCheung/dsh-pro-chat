@@ -22,7 +22,7 @@
 
 仓库是独立 npm 项目。干净检出后使用 Node.js 24 依次执行 `npm ci`、`npm run check`、`npm run tarball:check` 和 `npm audit --audit-level=moderate`。`prepack` 与 `prepublishOnly` 均执行完整门禁；内部 pack allowlist 使用 `--ignore-scripts`，不会递归触发生命周期。GitHub CI 在 Windows/Linux 上重复干净安装与检查，并验证实际 tarball 的空消费者安装和公开导出。
 
-质量检查会比较两次构建的全部 `lib` 文件哈希，包括声明文件和 map，再与 `HEAD` 比较，拦截修改、删除、暂存变更和新增生成物，包括被忽略的文件。修改源码后先运行 `npm run build`，把源码和生成物一起提交，再运行完整门禁。`.gitattributes` 将源码和生成物固定为 LF，避免 Windows/Linux 检出换行差异改变 source map 内嵌内容。
+质量检查会比较两次构建的全部 `lib` 文件哈希，包括声明文件和 map，再把工作目录和暂存区分别与 `HEAD` 比较，拦截修改、删除、暂存变更和新增生成物，包括被忽略的文件。即使后续构建恢复或删除了工作目录中的文件，暂存区里的旧生成物仍会被拦截。修改源码后先运行 `npm run build`，把源码和生成物一起提交，再运行完整门禁。`.gitattributes` 将源码和生成物固定为 LF，避免 Windows/Linux 检出换行差异改变 source map 内嵌内容。
 
 CSS 模块前缀由包名和规范化后的包内文件路径计算，Windows/Linux 的物理检出路径及路径分隔符不会改变已提交的客户端 bundle。
 

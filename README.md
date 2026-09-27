@@ -94,7 +94,7 @@ npm audit --audit-level=moderate
 
 `prepack` and `prepublishOnly` both execute the complete `npm run check` gate. The nested pack allowlist uses `--ignore-scripts`, so lifecycle verification cannot recurse through `npm pack`. GitHub CI repeats clean npm installation and checks on Windows and Linux, exercises the real prepack lifecycle, installs the generated tarball into an empty consumer, and audits the locked dependency tree.
 
-The quality gate hashes every `lib` file, including declarations and maps, across two builds. It then compares rebuilt `lib` with `HEAD` and rejects modified, deleted, staged, or new artifacts, including ignored files. After changing source, run `npm run build` and commit the source and generated output together before running the complete gate. `.gitattributes` keeps source and generated files on LF across Windows and Linux so embedded source-map content does not depend on checkout line endings.
+The quality gate hashes every `lib` file, including declarations and maps, across two builds. It compares the rebuilt working tree and staged index separately with `HEAD`, rejecting modified, deleted, staged, or new artifacts, including ignored files. A stale staged artifact is rejected even if a later build restores or removes its working-tree copy. After changing source, run `npm run build` and commit the source and generated output together before running the complete gate. `.gitattributes` keeps source and generated files on LF across Windows and Linux so embedded source-map content does not depend on checkout line endings.
 
 CSS module prefixes are derived from the package ID and normalized package-relative filename. Physical checkout paths and platform path separators therefore do not change the committed client bundle.
 
