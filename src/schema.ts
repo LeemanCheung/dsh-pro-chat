@@ -133,7 +133,10 @@ export type ChatIdInput = z.infer<typeof ChatIdInputSchema>
 export const SaveSettingsInputSchema = z.object({ cdpTarget: CdpTargetSchema }).strict()
 export type SaveSettingsInput = z.infer<typeof SaveSettingsInputSchema>
 
-export const ProChatSummarySchema = ProChatSchema.pick({ id: true, title: true, createdAt: true, updatedAt: true, status: true, lastError: true, divergence: true, quarantine: true })
+// Preserve a named shape in declarations instead of expanding inferred Pick members in an unstable order.
+type ProChatSummaryShape = Pick<typeof ProChatSchema.shape,
+  'id' | 'title' | 'createdAt' | 'updatedAt' | 'status' | 'lastError' | 'divergence' | 'quarantine'>
+export const ProChatSummarySchema: z.ZodObject<ProChatSummaryShape, z.core.$strict> = ProChatSchema.pick({ id: true, title: true, createdAt: true, updatedAt: true, status: true, lastError: true, divergence: true, quarantine: true })
 export type ProChatSummary = z.infer<typeof ProChatSummarySchema>
 
 export const ProChatDetailSchema = z.object({

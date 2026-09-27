@@ -94,6 +94,10 @@ npm audit --audit-level=moderate
 
 `prepack` and `prepublishOnly` both execute the complete `npm run check` gate. The nested pack allowlist uses `--ignore-scripts`, so lifecycle verification cannot recurse through `npm pack`. GitHub CI repeats clean npm installation and checks on Windows and Linux, exercises the real prepack lifecycle, installs the generated tarball into an empty consumer, and audits the locked dependency tree.
 
+The quality gate hashes every `lib` file, including declarations and maps, across two builds. It compares the rebuilt working tree and staged index separately with `HEAD`, rejecting modified, deleted, staged, or new artifacts, including ignored files. A stale staged artifact is rejected even if a later build restores or removes its working-tree copy. After changing source, run `npm run build` and commit the source and generated output together before running the complete gate. `.gitattributes` keeps source and generated files on LF across Windows and Linux so embedded source-map content does not depend on checkout line endings.
+
+CSS module prefixes are derived from the package ID and normalized package-relative filename. Physical checkout paths and platform path separators therefore do not change the committed client bundle.
+
 The package prepares version `0.2.1` for DSH `0.1.2-rc.1`. It uses the current Remote, Conversation, and Renderer contracts and owns its stylesheet through the plugin lifecycle. The rc.1 QA Profile loaded both the Host plugin and the visible Pro Chat tab. Starting the dedicated Chrome was blocked by the environment's automatic approval check, so the required two-turn browser UAT did not run; this is an uncompleted browser prerequisite, not a DSH load failure. Compatibility therefore remains `unknown`. The automated gate covers:
 
 - strict schemas and source-owned Host/Client Remote descriptors;
@@ -105,7 +109,7 @@ The package prepares version `0.2.1` for DSH `0.1.2-rc.1`. It uses the current R
 - prepare recovery, shutdown admission/barrier behavior, atomic pending-finalization sidecars, cross-table lineage conflicts, restart divergence locking, and injected write failures;
 - selection ownership across delayed five-second refreshes, failed detail loads, and foreground sends;
 - recoverable trash/restore, durable artifact inventories, missing-artifact refusal, long exact-only legacy histories, conflicts, and link escape;
-- generated-artifact/source parity, deterministic rebuilds, and an exact package allowlist derived from the public exports.
+- generated-artifact/source parity, deterministic rebuilds, committed-output parity including new files, and an exact package allowlist derived from the public exports.
 - standalone configuration/lockfile ownership, source-map containment, non-recursive release lifecycle, and installed-tarball export resolution.
 
 `tests/ui-fixture.html` is a manual-only browser fixture. It is excluded from the npm package and automated gate; it is not a live DSH Profile, ChatGPT model, or production UAT.

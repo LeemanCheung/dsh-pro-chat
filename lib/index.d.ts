@@ -285,57 +285,8 @@ declare const SaveSettingsInputSchema: z.ZodObject<{
   cdpTarget: z.ZodString;
 }, z.core.$strict>;
 type SaveSettingsInput = z.infer<typeof SaveSettingsInputSchema>;
-declare const ProChatSummarySchema: z.ZodObject<{
-  id: z.ZodString;
-  createdAt: z.ZodString;
-  updatedAt: z.ZodString;
-  status: z.ZodEnum<{
-    idle: "idle";
-    running: "running";
-    failed: "failed";
-    cancelled: "cancelled";
-  }>;
-  title: z.ZodString;
-  lastError: z.ZodOptional<z.ZodString>;
-  divergence: z.ZodOptional<z.ZodObject<{
-    turnId: z.ZodString;
-    at: z.ZodString;
-    oracleSessionId: z.ZodOptional<z.ZodString>;
-    reason: z.ZodString;
-  }, z.core.$strict>>;
-  quarantine: z.ZodOptional<z.ZodObject<{
-    opId: z.ZodString;
-    phase: z.ZodEnum<{
-      "trash-pending": "trash-pending";
-      quarantined: "quarantined";
-      "restore-pending": "restore-pending";
-    }>;
-    archivedAt: z.ZodString;
-    previousStatus: z.ZodEnum<{
-      idle: "idle";
-      running: "running";
-      failed: "failed";
-      cancelled: "cancelled";
-    }>;
-    oracleScope: z.ZodEnum<{
-      "legacy-global": "legacy-global";
-      "chat-scoped": "chat-scoped";
-    }>;
-    exactOracleSessionIds: z.ZodArray<z.ZodString>;
-    artifacts: z.ZodOptional<z.ZodArray<z.ZodDiscriminatedUnion<[z.ZodObject<{
-      kind: z.ZodLiteral<"transcript">;
-      presentAtArchive: z.ZodBoolean;
-    }, z.core.$strict>, z.ZodObject<{
-      kind: z.ZodLiteral<"oracle-chat">;
-      presentAtArchive: z.ZodBoolean;
-    }, z.core.$strict>, z.ZodObject<{
-      kind: z.ZodLiteral<"oracle-session">;
-      sessionId: z.ZodString;
-      presentAtArchive: z.ZodBoolean;
-    }, z.core.$strict>], "kind">>>;
-    lastError: z.ZodOptional<z.ZodString>;
-  }, z.core.$strict>>;
-}, z.core.$strict>;
+type ProChatSummaryShape = Pick<typeof ProChatSchema.shape, 'id' | 'title' | 'createdAt' | 'updatedAt' | 'status' | 'lastError' | 'divergence' | 'quarantine'>;
+declare const ProChatSummarySchema: z.ZodObject<ProChatSummaryShape, z.core.$strict>;
 type ProChatSummary = z.infer<typeof ProChatSummarySchema>;
 declare const ProChatDetailSchema: z.ZodObject<{
   chat: z.ZodObject<{

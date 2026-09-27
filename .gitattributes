@@ -1,0 +1,3 @@
+# Source maps embed source text, so checkout line endings must match on every OS.
+src/** text eol=lf
+lib/** text eol=lf

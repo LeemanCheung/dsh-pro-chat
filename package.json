@@ -47,7 +47,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --config vitest.config.ts",
     "check": "npm run check:quality && npm run pack:check",
-    "check:quality": "npm run typecheck && npm run build:host && npm run build:client && npm run test && node scripts/check-generated.mjs && node scripts/check-standalone.mjs && node scripts/check-deterministic.mjs",
+    "check:quality": "npm run typecheck && npm run build:host && npm run build:client && npm run test && node scripts/check-generated.mjs && node scripts/check-standalone.mjs && node scripts/check-deterministic.mjs && npm run check:committed",
+    "check:committed": "node scripts/check-committed.mjs",
     "pack:check": "node scripts/check-pack.mjs",
     "tarball:check": "node scripts/check-tarball-consumer.mjs",
     "prepack": "npm run check",
@@ -94,6 +95,6 @@
     "lightningcss": "1.33.0",
     "tsdown": "0.22.14",
     "typescript": "6.0.3",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   }
 }
